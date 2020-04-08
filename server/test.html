@@ -1,0 +1,9 @@
+<html>
+<script src="https://d3js.org/d3.v5.min.js"></script>
+<script>
+  d3.json("http://localhost:8080/movies.json")
+  .then(data => {
+    console.log(data[0]);
+  });
+</script>
+</html>
