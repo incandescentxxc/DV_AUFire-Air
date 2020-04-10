@@ -1,0 +1,9 @@
+#map {
+    display: inline-block;
+}
+.onoffswitch{
+    top:150px;
+    left: 80px;
+    display: inline-block;
+    vertical-align:top;
+}
