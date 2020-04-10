@@ -1,9 +1,18 @@
 #map {
     display: inline-block;
 }
-.onoffswitch{
-    top:150px;
-    left: 80px;
+.dashboard{
     display: inline-block;
     vertical-align:top;
+}
+.onoffswitch{
+    position: relative;
+    top:150px;
+    left: 80px;
+
+}
+#timeSlider{
+    position: relative;
+    left: 100px;
+    top: 200px;
 }

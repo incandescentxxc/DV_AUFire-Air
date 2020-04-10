@@ -3,9 +3,12 @@ This is a data visualization project whose aim is to visualize the situaion of h
 API token: 372c24bdc25200202275ac48f97d0f085ab1d482<br>
 Progress checkin:
 Basic visualization for Fire spots has been done. Focus on the interactive part now. <br>
-- Time slider
-- Daytime/Nighttime selection
+- <s>Time slider</s>
+- <s>Daytime/Nighttime selection</s>
 - Select points to take closer look
 - Zoom/pan
 - Continous play
+- Style refining
+- Add more informative explantion for users
+- Incorporate Air Quality data
 - TBC

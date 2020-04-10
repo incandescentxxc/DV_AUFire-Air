@@ -37,13 +37,14 @@ function start(){
         initData = fireData.filter(item => item["acq_date"] === "2019-10-01" && item["daynight"] === "D" && parseInt(item["confidence"]) > 60 );
         render(svg, initData, projection);
         renderLegend(svg);
-        var switchChecked = true;
+        var switchChecked = true; //initial value
         d3.select("#myonoffswitch").on("change",d=>{
             switchChecked = !switchChecked; //change into oposite
-            updateGraph(switchChecked ,fireData, projection, svg);
+            updateGraph(switchChecked, fireData, projection, svg);
         });
-        // updateGraph(circles)
-        
+        d3.select("#timeRange").on("change", d=> {
+            updateGraph(switchChecked, fireData, projection, svg);
+            });
 
     })
 }
@@ -166,14 +167,32 @@ function renderLegend(svg){
 }
 
 function updateGraph(daynightOp, fireData, projection, svg){
+    var date = new Date(document.getElementById("timeRange").value*1000); //gets the date value whenever update is to be made
+    console.log(document.getElementById("timeRange").value*1000);
+    console.log(date);
+    var dateFilter = dateProcessor(date);
+    console.log(dateFilter)
     //daynightOp: true if daytime, otherwise nighttime
     if(daynightOp){
-        data = fireData.filter(item => item["acq_date"] === "2019-10-01" && item["daynight"] === "D" && parseInt(item["confidence"]) > 60 );
+        data = fireData.filter(item => item["acq_date"] === dateFilter && item["daynight"] === "D" && parseInt(item["confidence"]) > 60 );
     } else{
-        data = fireData.filter(item => item["acq_date"] === "2019-10-01" && item["daynight"] === "N" && parseInt(item["confidence"]) > 60 );
+        data = fireData.filter(item => item["acq_date"] === dateFilter && item["daynight"] === "N" && parseInt(item["confidence"]) > 60 );
     }
     render(svg, data, projection);
 }
 
+// tool function to return date as the format of "yyyy-mm-dd"
+function dateProcessor(date){
+    month = '' + (date.getMonth() + 1);
+    day = '' + date.getDate();
+    year = date.getFullYear();
 
+    if (month.length < 2) 
+        month = '0' + month;
+    if (day.length < 2) 
+        day = '0' + day;
+
+    return [year, month, day].join('-');
+
+}
 

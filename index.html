@@ -5,6 +5,7 @@
         <title>A4</title>
         <link rel="stylesheet" type="text/css" href="css/index.css">
         <link rel="stylesheet" type="text/css" href="css/timeButton.css">
+        <link rel="stylesheet" type="text/css" href="css/timeSilder.css">
         <script src="https://d3js.org/d3.v5.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-legend/2.25.6/d3-legend.js"></script>
         <script src="https://d3js.org/d3-array.v1.min.js"></script>
@@ -17,14 +18,31 @@
         <div id="map"></div>
         <script>start()</script>
 
-        <div class="onoffswitch">
-            <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="myonoffswitch" checked>
-            <label class="onoffswitch-label" for="myonoffswitch">
-                <span class="onoffswitch-inner"></span>
-                <span class="onoffswitch-switch"></span>
-            </label>
+        <div class="dashboard">
+            <div class="onoffswitch">
+                <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="myonoffswitch" checked>
+                <label class="onoffswitch-label" for="myonoffswitch">
+                    <span class="onoffswitch-inner"></span>
+                    <span class="onoffswitch-switch"></span>
+                </label>
+            </div>
+    
+            <div id="timeSlider">
+                <input id="timeRange" type="range" min= 1569859200  max=1578672000 value= 1569859200, step= 86400 class="timeslider" orient="vertical"/><br>
+                <p>Date: <span id="range">2019-10-01</span></p>
+            </div>
         </div>
 
-        <div id="timeSlider"></div>
+        
+        <script>
+            var slider = document.getElementById("timeRange");
+            var output = document.getElementById("range");
+            output.innerHTML = slider.value;
+
+
+            slider.oninput = function() {
+                output.innerHTML = new Date(this.value*1000).toDateString();
+            }
+        </script>
         
     </body>

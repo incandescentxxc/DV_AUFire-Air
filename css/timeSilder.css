@@ -1,0 +1,32 @@
+
+.timeslider {
+    -webkit-appearance: slider-vertical;
+    width: 15px;
+    height: 300px;
+    background: #d3d3d3;
+    outline: none;
+    opacity: 0.7;
+    -webkit-transition: .2s;
+    transition: opacity .2s;
+}
+
+.timeslider:hover {
+opacity: 1;
+}
+
+.timeslider::-webkit-slider-thumb {
+-webkit-appearance: none;
+appearance: none;
+width: 25px;
+height: 25px;
+background: #4CAF50;
+cursor: pointer;
+
+}
+
+.timeslider::-moz-range-thumb {
+width: 25px;
+height: 25px;
+background: #4CAF50;
+cursor: pointer;
+}
