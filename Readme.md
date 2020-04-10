@@ -5,10 +5,10 @@ Progress checkin:
 Basic visualization for Fire spots has been done. Focus on the interactive part now. <br>
 - <s>Time slider</s>
 - <s>Daytime/Nighttime selection</s>
-- Select points to take closer look
-- Zoom/pan
+- <s>Select points to take closer look</s>
 - Continous play
 - Style refining
 - Add more informative explantion for users
+- Zoom/pan
 - Incorporate Air Quality data
 - TBC

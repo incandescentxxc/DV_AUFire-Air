@@ -56,6 +56,34 @@ function render(svg, data, projection){
     // max = d3.max(data.map(item => item.brightness))
     // minSize = d3.min(data.map(item => item.track * item.scan));
     // maxSize = d3.max(data.map(item => item.track * item.scan));
+
+    // create a tooltip
+    var Tooltip = d3.select("#map")
+    .append("div")
+    .attr("class", "tooltip")
+    .style("opacity", 1)
+    .style("background-color", "white")
+    .style("border", "solid")
+    .style("border-width", "2px")
+    .style("border-radius", "5px")
+    .style("padding", "5px")
+    .style("position", "absolute")
+  
+      // Three function that change the tooltip when user hover / move / leave a cell
+      var mouseover = function(d) {
+        Tooltip.style("opacity", 1)
+      }
+      var mousemove = function(d) {
+        Tooltip
+          .html("temperature: "+ Math.round(d.brightness) + "<br>" + "area: " + Math.round(d.track*d.scan * 10) / 10 +"km<sup>2</sup>" + "<br>" + "long: " + d.longitude + "<br>" + "lat: " + d.latitude)
+          .style("left", (d3.mouse(this)[0]+10) + "px")
+          .style("top", (d3.mouse(this)[1]) + "px")
+      }
+      var mouseleave = function(d) {
+        Tooltip.style("opacity", 0)
+      }
+
+
     var colorScale = d3.scaleSequential()
             .domain([
                 300,510
@@ -75,25 +103,32 @@ function render(svg, data, projection){
         .attr("cy", function(d){ return projection([d.longitude, d.latitude])[1] })
         .attr("r", d => sizeScale(parseInt(d.scan)*parseInt(d.track)))
         .style("fill", d => colorScale(d.brightness))
-        .attr("fill-opacity", .8),
+        .attr("fill-opacity", .8)
+        .on("mouseover", mouseover)
+        .on("mousemove", mousemove)
+        .on("mouseleave", mouseleave),
 
         update => update
         .attr("cx", function(d){ return projection([d.longitude, d.latitude])[0] })
         .attr("cy", function(d){ return projection([d.longitude, d.latitude])[1] })
         .attr("r", d => sizeScale(parseInt(d.scan)*parseInt(d.track)))
         .style("fill", d => colorScale(d.brightness))
-        .attr("fill-opacity", .8),
+        .attr("fill-opacity", .8)
+        .on("mouseover", mouseover)
+        .on("mousemove", mousemove)
+        .on("mouseleave", mouseleave),
 
         exit => {
             return exit.remove();
         }
-    );
+    )
+;
 
 }
 
 
 function renderLegend(svg){
-    const step = 0.1;
+    const step = 0.05;
 
     // An array interpolated over our domain where height is the height of the bar
     const expandedDomain = d3.range(300, 510, step);
@@ -157,7 +192,7 @@ function renderLegend(svg){
     .shape("circle")
     .orient("vertical")
     .scale(sizeScale)
-    .title("Fire area in k(m^2)")
+    .title("Fire area in km²")
     // .color("grey")
     
     svg.append("g")

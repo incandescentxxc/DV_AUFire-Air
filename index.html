@@ -13,10 +13,11 @@
         <script src="https://d3js.org/d3-geo-projection.v2.min.js"></script>
         <script src="https://d3js.org/topojson.v2.min.js"></script>
         <script src="js/example.js"></script>
+        <script src="js/timeslider.js"></script>
     </head>
     <body>
-        <div id="map"></div>
-        <script>start()</script>
+        <div id="map"><script>start()</script></div>
+        
 
         <div class="dashboard">
             <div class="onoffswitch">
@@ -28,21 +29,13 @@
             </div>
     
             <div id="timeSlider">
-                <input id="timeRange" type="range" min= 1569859200  max=1578672000 value= 1569859200, step= 86400 class="timeslider" orient="vertical"/><br>
+                <input id="timeRange" type="range" min= 1569859200  max=1578672000 value= 1569859200  step= 86400 class="timeslider" orient="vertical"/><br>
                 <p>Date: <span id="range">2019-10-01</span></p>
+                <script>showDate()</script>
             </div>
         </div>
 
-        
-        <script>
-            var slider = document.getElementById("timeRange");
-            var output = document.getElementById("range");
-            output.innerHTML = slider.value;
 
-
-            slider.oninput = function() {
-                output.innerHTML = new Date(this.value*1000).toDateString();
-            }
-        </script>
+    
         
     </body>
