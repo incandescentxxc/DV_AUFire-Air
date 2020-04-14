@@ -7,7 +7,7 @@ function start(){
 
         //create SVG
         var margin = {top:50, right:50, bottom:50, left:50},
-        width = 1100 - margin.left - margin.right,
+        width = 1200 - margin.left - margin.right,
         height = 800 - margin.top - margin.bottom;
         let svg = d3.select("#map").append('svg')
             // .attr("viewBox", [0, 0, 400, 400]);
@@ -33,72 +33,70 @@ function start(){
             .attr('d', geoGenerator) //the attribute that defines the coordinates of a path
             .attr( "fill", "#BDC0BA" )
             .attr( "stroke", "#999" );
-
-        
-
-        
-        var formatDateIntoYear = d3.timeFormat("%Y");
-        var formatDate = d3.timeFormat("%b %Y");
-        var parseDate = d3.timeParse("%m/%d/%y");
+        // some specifications for rendering time slider
+        var formatDate = d3.timeFormat("%Y-%m-%d");    
 
         var startDate = new Date("2019-10-01"),
         endDate = new Date("2020-01-11");
         
         var currentValue = 0;
-        var targetValue = height/3*2;
-        
-        var playButton = d3.select("#play-button");
-            
-        var y = d3.scaleTime()
-            .domain([startDate, endDate])
-            .range([0, targetValue])
-            .clamp(true);
-        
-        var slider = svg.append("g")
-            .attr("class", "slider")
-            .attr("transform", "translate(" + width + "," + height/5 + ")");
-        
-        slider.append("line")
-            .attr("class", "track")
-            .attr("y1", y.range()[1])
-            .attr("y2", y.range()[0])
-            .select(function() { return this.parentNode.appendChild(this.cloneNode(true)); })
-            .attr("class", "track-inset")
-            .select(function() { return this.parentNode.appendChild(this.cloneNode(true)); })
-            .attr("class", "track-overlay")
-            .call(d3.drag()
-                .on("start.interrupt", function() { slider.interrupt(); })
-                .on("start drag", function() {
-                    currentValue = d3.event.y;
-                    console.log("haha" + y.invert(currentValue))
-                    updateGraph(y.invert(currentValue),fireData,projection,svg); 
-                })
-            );
-        
-        slider.insert("g", ".track-overlay")
-            .attr("class", "ticks")
-            .attr("transform", "translate(" + 20 + ",0)")
-            .selectAll("text")
-            .data(y.ticks(10))
-            .enter()
-            .append("text")
-            .attr("x", 10)
-            .attr("y", y)
-            .attr("text-anchor", "middle")
-            .text(function(d) { return formatDateIntoYear(d); });
-        
-        var handle = slider.insert("circle", ".track-overlay")
-            .attr("class", "handle")
-            .attr("r", 9);
-        
-        var label = slider.append("text")  
-            .attr("class", "label")
-            .attr("text-anchor", "middle")
-            .text(formatDate(startDate))
-            .attr("transform", "translate(0," + (-25) + ")")
+        var targetValue = height/3*2; //height = 700
+        var switchChecked = true; //initial value
 
+        var y = d3.scaleTime()
+        .domain([startDate, endDate])
+        .range([0, targetValue])
+        .clamp(true);
+
+        var slider = svg.append("g")
+        .attr("class", "slider")
+        .attr("transform", "translate(" + width + "," + height/5 + ")");
+
+        slider.append("line")
+        .attr("class", "track")
+        .attr("y1", y.range()[1])
+        .attr("y2", y.range()[0])
+        .select(function() { return this.parentNode.appendChild(this.cloneNode(true)); })
+        .attr("class", "track-inset")
+        .select(function() { return this.parentNode.appendChild(this.cloneNode(true)); })
+        .attr("class", "track-overlay")
+        .call(d3.drag()
+            .on("start.interrupt", function() { slider.interrupt(); })
+            .on("start drag", function() {
+                currentValue = d3.event.y;
+                console.log("haha" + y.invert(currentValue))
+                updateSlider(y.invert(currentValue));
+                updateGraph(y.invert(currentValue),switchChecked,fireData,projection,svg); 
+            })
+        );
+
+        slider.insert("g", ".track-overlay")
+        .attr("class", "ticks")
+        .attr("transform", "translate(" + 30 + ",0)")
+        .selectAll("text")
+        .data(y.ticks(10))
+        .enter()
+        .append("text")
+        .attr("x", 10)
+        .attr("y", y)
+        .attr("text-anchor", "middle")
+        .text(function(d) { return formatDate(d); });
+
+        var handle = slider.insert("circle", ".track-overlay")
+        .attr("class", "handle")
+        .attr("r", 9);
+        console.log(handle)
+
+        var label = slider.append("text")  
+        .attr("class", "label")
+        .attr("text-anchor", "middle")
+        .text(formatDate(startDate))
+        .attr("transform", "translate("+ (-50) + "," + (-15) + ")")
+
+        var playButton = d3.select("#play-button");
         var moving = false;
         var playButton = d3.select("#play-button");
+        
         playButton
         .on("click", function() {
             var button = d3.select(this);
@@ -115,8 +113,9 @@ function start(){
             console.log("Slider moving: " + moving);
         })
         function step() {
-            update(x.invert(currentValue));
-            currentValue = currentValue + (targetValue/151);
+            updateSlider(y.invert(currentValue));
+            updateGraph(y.invert(currentValue),switchChecked,fireData,projection,svg); 
+            currentValue = currentValue + (targetValue/153); // 153 is the specific days recorded
             if (currentValue > targetValue) {
               moving = false;
               currentValue = 0;
@@ -126,22 +125,29 @@ function start(){
               console.log("Slider moving: " + moving);
             }
         }
+        function updateSlider(date) {
+            handle.attr("cy", y(date));
+            console.log(handle)
+            label
+              .attr("y", y(date))
+              .text(formatDate(date));
+        }
+
+
         // render the data for the first time
         initData = fireData.filter(item => item["acq_date"] === "2019-10-01" && item["daynight"] === "D" && parseInt(item["confidence"]) > 60 );
         render(svg, initData, projection);
         renderLegend(svg);
-        var switchChecked = true; //initial value
         d3.select("#myonoffswitch").on("change",d=>{
             switchChecked = !switchChecked; //change into oposite
-            updateGraph(switchChecked, fireData, projection, svg);
+            updateGraph(y.invert(currentValue),switchChecked, fireData, projection, svg);
         });
-        d3.select("#timeRange").on("change", d=> {
-            updateGraph(switchChecked, fireData, projection, svg);
-            });
 
     })
+
 }
 
+// render the circles based on the data get
 function render(svg, data, projection){
     console.log(data)
     // draw data
@@ -219,7 +225,7 @@ function render(svg, data, projection){
 
 }
 
-
+// render the legends
 function renderLegend(svg){
     const step = 0.05;
 
@@ -294,10 +300,10 @@ function renderLegend(svg){
 
 }
 
+// update the circles in the graph
 function updateGraph(date, daynightOp, fireData, projection, svg){
-    var date = new Date(document.getElementById("timeRange").value*1000); //gets the date value whenever update is to be made
-    console.log(document.getElementById("timeRange").value*1000);
-    console.log(date);
+    // var date = new Date(document.getElementById("timeRange").value*1000); //gets the date value whenever update is to be made
+    // console.log(date);
     var dateFilter = dateProcessor(date);
     console.log(dateFilter)
     //daynightOp: true if daytime, otherwise nighttime
@@ -308,6 +314,7 @@ function updateGraph(date, daynightOp, fireData, projection, svg){
     }
     render(svg, data, projection);
 }
+
 
 // tool function to return date as the format of "yyyy-mm-dd"
 function dateProcessor(date){
@@ -323,4 +330,3 @@ function dateProcessor(date){
     return [year, month, day].join('-');
 
 }
-

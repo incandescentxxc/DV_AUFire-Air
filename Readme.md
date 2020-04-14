@@ -6,7 +6,7 @@ Basic visualization for Fire spots has been done. Focus on the interactive part 
 - <s>Time slider</s>
 - <s>Daytime/Nighttime selection</s>
 - <s>Select points to take closer look</s>
-- Continous play
+- <s>Continous play</s>
 - Style refining
 - Add more informative explantion for users
 - Zoom/pan

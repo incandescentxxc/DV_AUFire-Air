@@ -12,7 +12,7 @@
         <script src="https://d3js.org/d3-geo.v1.min.js"></script>
         <script src="https://d3js.org/d3-geo-projection.v2.min.js"></script>
         <script src="https://d3js.org/topojson.v2.min.js"></script>
-        <script src="js/example.js"></script>
+        <script src="js/vis.js"></script>
         <script src="js/timeslider.js"></script>
     </head>
     <body>
@@ -27,11 +27,8 @@
                     <span class="onoffswitch-switch"></span>
                 </label>
             </div>
-    
-            <div id="timeSlider">
-                <input id="timeRange" type="range" min= 1569859200  max=1578672000 value= 1569859200  step= 86400 class="timeslider" orient="vertical"/><br>
-                <p>Date: <span id="range">2019-10-01</span></p>
-                <script>showDate()</script>
+            <div id="animation_button">
+                <button id="play-button">Play</button>
             </div>
         </div>
 
