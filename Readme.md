@@ -7,8 +7,11 @@ Basic visualization for Fire spots has been done. Focus on the interactive part 
 - <s>Daytime/Nighttime selection</s>
 - <s>Select points to take closer look</s>
 - <s>Continous play</s>
-- Style refining
+- <s>Style refining</s>
 - Add more informative explantion for users
+- - add temperature transformation
+- - disclose information on the satelite data including termperature meanings etc.
+- - add more geoinfo
 - Zoom/pan
 - Incorporate Air Quality data
 - TBC

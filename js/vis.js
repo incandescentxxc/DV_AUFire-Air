@@ -84,7 +84,8 @@ function start(){
 
         var handle = slider.insert("circle", ".track-overlay")
         .attr("class", "handle")
-        .attr("r", 9);
+        .attr("r", 9)
+        .style("stroke","#000");
         console.log(handle)
 
         var label = slider.append("text")  
@@ -187,17 +188,18 @@ function render(svg, data, projection){
             .domain([
                 300,510
             ])
-            .interpolator(d3.interpolateReds);
+            .interpolator(d3.interpolateOrRd);
 
     var sizeScale = d3.scaleLinear()
         .domain([1, 12])
         .range([4,9]);
 
-    var circles = svg.selectAll("circle")
+    var circles = svg.selectAll("circle").filter(".data-point") //only choose those who have class= data-point
     .data(data, d => d)
     .join(
         enter => enter
         .insert('circle')
+        .attr("class", "data-point")
         .attr("cx", function(d){ return projection([d.longitude, d.latitude])[0] })
         .attr("cy", function(d){ return projection([d.longitude, d.latitude])[1] })
         .attr("r", d => sizeScale(parseInt(d.scan)*parseInt(d.track)))
@@ -208,6 +210,9 @@ function render(svg, data, projection){
         .on("mouseleave", mouseleave),
 
         update => update
+        .attr("class", "data-point")
+        // .transition()
+        // .duration(100)
         .attr("cx", function(d){ return projection([d.longitude, d.latitude])[0] })
         .attr("cy", function(d){ return projection([d.longitude, d.latitude])[1] })
         .attr("r", d => sizeScale(parseInt(d.scan)*parseInt(d.track)))
@@ -242,7 +247,7 @@ function renderLegend(svg){
     .domain([
         300,510
     ])
-    .interpolator(d3.interpolateReds);
+    .interpolator(d3.interpolateOrRd);
 
     var sizeScale = d3.scaleLinear()
     .domain([1, 12])
