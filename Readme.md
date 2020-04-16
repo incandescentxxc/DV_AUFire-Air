@@ -12,6 +12,8 @@ Basic visualization for Fire spots has been done. Focus on the interactive part 
 - - add temperature transformation
 - - disclose information on the satelite data including termperature meanings etc.
 - - add more geoinfo
+- Incorporate the similar date range data to compare
+- More filtering? like the confidence stuff
 - Zoom/pan
 - Incorporate Air Quality data
 - TBC
