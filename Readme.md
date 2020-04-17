@@ -9,9 +9,11 @@ Basic visualization for Fire spots has been done. Focus on the interactive part 
 - <s>Continous play</s>
 - <s>Style refining</s>
 - Add more informative explantion for users
-- - add temperature transformation
+- - <s>add temperature transformation</s>
 - - disclose information on the satelite data including termperature meanings etc.
 - - add more geoinfo
+- - a new little bug about the color of the color legend under F
+- add comparison view
 - Zoom/pan
 - Incorporate Air Quality data
 - TBC

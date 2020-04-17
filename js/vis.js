@@ -1,3 +1,12 @@
+// some consts used for temperature presentation
+const KELVIN_TEMP = 273.15;
+const K_DOMAIN_MIN = 300;
+const K_DOMAIN_MAX = 510;
+const C_DOMAIN_MIN = Math.round(K_DOMAIN_MIN - KELVIN_TEMP);
+const C_DOMAIN_MAX = Math.round(K_DOMAIN_MAX - KELVIN_TEMP);
+const F_DOMAIN_MIN = Math.round(C_DOMAIN_MIN * 9 / 5 + 32);
+const F_DOMAIN_MAX = Math.round(C_DOMAIN_MAX * 9 / 5 + 32);
+
 function start(){
     var dataFirePromise = d3.csv("http://localhost:8080/csv/fire_nrt_M6.csv");
     var mapPromise = d3.json("http://localhost:8080/aus_state.geojson");
@@ -42,6 +51,8 @@ function start(){
         var currentValue = 0;
         var targetValue = height/3*2; //height = 700
         var switchChecked = true; //initial value
+        var tempChecked = "K"; // by defalut
+
 
         var y = d3.scaleTime()
         .domain([startDate, endDate])
@@ -64,9 +75,8 @@ function start(){
             .on("start.interrupt", function() { slider.interrupt(); })
             .on("start drag", function() {
                 currentValue = d3.event.y;
-                console.log("haha" + y.invert(currentValue))
                 updateSlider(y.invert(currentValue));
-                updateGraph(y.invert(currentValue),switchChecked,fireData,projection,svg); 
+                updateGraph(y.invert(currentValue),switchChecked,fireData,projection,svg,tempChecked); 
             })
         );
 
@@ -115,7 +125,7 @@ function start(){
         })
         function step() {
             updateSlider(y.invert(currentValue));
-            updateGraph(y.invert(currentValue),switchChecked,fireData,projection,svg); 
+            updateGraph(y.invert(currentValue),switchChecked,fireData,projection,svg, tempChecked); 
             currentValue = currentValue + (targetValue/153); // 153 is the specific days recorded
             if (currentValue > targetValue) {
               moving = false;
@@ -137,63 +147,82 @@ function start(){
 
         // render the data for the first time
         initData = fireData.filter(item => item["acq_date"] === "2019-10-01" && item["daynight"] === "D" && parseInt(item["confidence"]) > 60 );
-        render(svg, initData, projection);
-        renderLegend(svg);
+        render(svg, initData, projection, tempChecked);
+        renderLegend(svg, tempChecked);
         d3.select("#myonoffswitch").on("change",d=>{
             switchChecked = !switchChecked; //change into oposite
-            updateGraph(y.invert(currentValue),switchChecked, fireData, projection, svg);
+            updateGraph(y.invert(currentValue),switchChecked, fireData, projection, svg, tempChecked);
         });
+        d3.select("#K").on("click", d=>{
+            tempChecked = "K";
+            updateGraph(y.invert(currentValue),switchChecked, fireData, projection, svg, tempChecked);
+        });
+        d3.select("#C").on("click", d=>{
+            tempChecked = "C";
+            updateGraph(y.invert(currentValue),switchChecked, fireData, projection, svg, tempChecked);
+        });
+        d3.select("#F").on("click", d=>{
+            tempChecked = "F";
+            updateGraph(y.invert(currentValue),switchChecked, fireData, projection, svg, tempChecked);
+        })
 
     })
 
 }
 
 // render the circles based on the data get
-function render(svg, data, projection){
+function render(svg, data, projection, tempChecked){
+    // some specification for different temperature units
+    var tooltopText = "K";
+    var color_domain_min = K_DOMAIN_MIN;
+    var color_domain_max = K_DOMAIN_MAX;
+    if(tempChecked === "C"){
+        tooltopText = "°C";
+        color_domain_min = C_DOMAIN_MIN;
+        color_domain_max = C_DOMAIN_MAX;
+    } else if(tempChecked === "F"){
+        tooltopText = "°F";
+        color_domain_min = F_DOMAIN_MIN;
+        color_domain_max = F_DOMAIN_MAX;
+    }
     console.log(data)
-    // draw data
-    // min = d3.min(data.map(item => item.brightness)) - 20;
-    // max = d3.max(data.map(item => item.brightness))
-    // minSize = d3.min(data.map(item => item.track * item.scan));
-    // maxSize = d3.max(data.map(item => item.track * item.scan));
 
     // create a tooltip
-    var Tooltip = d3.select("#map")
-    .append("div")
-    .attr("class", "tooltip")
-    .style("opacity", 1)
-    .style("background-color", "white")
-    .style("border", "solid")
-    .style("border-width", "2px")
-    .style("border-radius", "5px")
-    .style("padding", "5px")
-    .style("position", "absolute")
-  
-      // Three function that change the tooltip when user hover / move / leave a cell
-      var mouseover = function(d) {
+    // Three function that change the tooltip when user hover / move / leave a cell
+    var mouseover = function(d) {
+        var Tooltip = d3.select("#map")
+            .append("div")
+            .attr("class", "tooltip")
+            .style("opacity", 1)
+            .style("background-color", "white")
+            .style("border", "solid")
+            .style("border-width", "2px")
+            .style("border-radius", "5px")
+            .style("padding", "5px")
+            .style("position", "absolute")
         Tooltip.style("opacity", 1)
-      }
-      var mousemove = function(d) {
-        Tooltip
-          .html("temperature: "+ Math.round(d.brightness) + "<br>" + "area: " + Math.round(d.track*d.scan * 10) / 10 +"km<sup>2</sup>" + "<br>" + "long: " + d.longitude + "<br>" + "lat: " + d.latitude)
-          .style("left", (d3.mouse(this)[0]+10) + "px")
-          .style("top", (d3.mouse(this)[1]) + "px")
-      }
-      var mouseleave = function(d) {
-        Tooltip.style("opacity", 0)
-      }
+    }
+    var mousemove = function(d) {
+        d3.select(".tooltip")
+            .html("temperature: "+ Math.round(tempConversion(tempChecked,d.brightness)) + tooltopText + "<br>" + "area: " + Math.round(d.track*d.scan * 10) / 10 +"km<sup>2</sup>" + "<br>" + "long: " + d.longitude + "<br>" + "lat: " + d.latitude)
+            .style("left", (d3.mouse(this)[0]+10) + "px")
+            .style("top", (d3.mouse(this)[1]) + "px")
+    }
+    var mouseleave = function(d) {
+        d3.select(".tooltip").remove();
+    }
 
-
+    console.log(color_domain_min);
     var colorScale = d3.scaleSequential()
             .domain([
-                300,510
+                color_domain_min,color_domain_max
             ])
             .interpolator(d3.interpolateOrRd);
 
     var sizeScale = d3.scaleLinear()
         .domain([1, 12])
         .range([4,9]);
-
+    console.log(tempChecked)
     var circles = svg.selectAll("circle").filter(".data-point") //only choose those who have class= data-point
     .data(data, d => d)
     .join(
@@ -203,8 +232,8 @@ function render(svg, data, projection){
         .attr("cx", function(d){ return projection([d.longitude, d.latitude])[0] })
         .attr("cy", function(d){ return projection([d.longitude, d.latitude])[1] })
         .attr("r", d => sizeScale(parseInt(d.scan)*parseInt(d.track)))
-        .style("fill", d => colorScale(d.brightness))
-        .attr("fill-opacity", .8)
+        .style("fill", d => colorScale(tempConversion(tempChecked, d.brightness)))
+        .attr("fill-opacity", 1)
         .on("mouseover", mouseover)
         .on("mousemove", mousemove)
         .on("mouseleave", mouseleave),
@@ -216,8 +245,8 @@ function render(svg, data, projection){
         .attr("cx", function(d){ return projection([d.longitude, d.latitude])[0] })
         .attr("cy", function(d){ return projection([d.longitude, d.latitude])[1] })
         .attr("r", d => sizeScale(parseInt(d.scan)*parseInt(d.track)))
-        .style("fill", d => colorScale(d.brightness))
-        .attr("fill-opacity", .8)
+        .style("fill", d => colorScale(tempConversion(tempChecked, d.brightness)))
+        .attr("fill-opacity", 1)
         .on("mouseover", mouseover)
         .on("mousemove", mousemove)
         .on("mouseleave", mouseleave),
@@ -231,21 +260,35 @@ function render(svg, data, projection){
 }
 
 // render the legends
-function renderLegend(svg){
+function renderLegend(svg, tempChecked){
+    // some specification for different temperature units
+    var tooltopText = "K";
+    var color_domain_min = K_DOMAIN_MIN;
+    var color_domain_max = K_DOMAIN_MAX;
+    if(tempChecked === "C"){
+        tooltopText = "°C";
+        color_domain_min = C_DOMAIN_MIN;
+        color_domain_max = C_DOMAIN_MAX;
+    } else if(tempChecked === "F"){
+        tooltopText = "°F";
+        color_domain_min = F_DOMAIN_MIN;
+        color_domain_max = F_DOMAIN_MAX;
+    }
+    
     const step = 0.05;
 
     // An array interpolated over our domain where height is the height of the bar
-    const expandedDomain = d3.range(300, 510, step);
+    const expandedDomain = d3.range(color_domain_min, color_domain_max, step);
 
     // Linear scale for y-axis
     const yScale = d3
     .scaleLinear()
-    .domain([300, 510])
+    .domain([color_domain_min, color_domain_max])
     .range([550, 150]);
     
     var colorScale = d3.scaleSequential()
     .domain([
-        300,510
+        color_domain_min,color_domain_max
     ])
     .interpolator(d3.interpolateOrRd);
 
@@ -253,8 +296,10 @@ function renderLegend(svg){
     .domain([1, 12])
     .range([4,9]);
     
-    // add color legend
-    svg.append('g').selectAll("rect")
+    // add color legend and remove previous one
+    svg.select(".color-legend").remove()
+    svg.append('g').attr("class", "color-legend")
+    .selectAll("rect")
     .data(expandedDomain)
     .enter()
     .append('rect')
@@ -267,31 +312,36 @@ function renderLegend(svg){
     .remove()
 
     // add legend explanation
+    svg.selectAll(".color-legend-prom").remove();
     svg.append('text')
+    .attr("class","color-legend-prom")
     .attr("x", 900)
     .attr("y", 120)
-    .text("Temperature in K")
+    .text("Temperature in " + tooltopText)
     .style("fill", "black")
     .style("font-size", "14px")
-    .exit()
-    .remove()
+
 
     // add text
     svg.append('text')
+    .attr("class","color-legend-prom")
     .attr("x", 930)
     .attr("y", 555)
-    .text(300)
+    .text(color_domain_min.toString() + tooltopText)
     .style("fill", "black")
     .style("font-size", "14px")
 
     svg.append('text')
+    .attr("class","color-legend-prom")
     .attr("x", 930)
     .attr("y", 155)
-    .text(510)
+    .text(color_domain_max.toString() + tooltopText)
     .style("fill", "black")
     .style("font-size", "14px")
 
-    // add size legend
+    // add size legend and remove previous ones
+    svg.select(".legendCells").remove();
+    svg.select(".legendTitle").remove();
     var legend = d3.legendSize()
     .shape("circle")
     .orient("vertical")
@@ -306,7 +356,7 @@ function renderLegend(svg){
 }
 
 // update the circles in the graph
-function updateGraph(date, daynightOp, fireData, projection, svg){
+function updateGraph(date, daynightOp, fireData, projection, svg, tempChecked){
     // var date = new Date(document.getElementById("timeRange").value*1000); //gets the date value whenever update is to be made
     // console.log(date);
     var dateFilter = dateProcessor(date);
@@ -317,9 +367,22 @@ function updateGraph(date, daynightOp, fireData, projection, svg){
     } else{
         data = fireData.filter(item => item["acq_date"] === dateFilter && item["daynight"] === "N" && parseInt(item["confidence"]) > 60 );
     }
-    render(svg, data, projection);
+    render(svg, data, projection, tempChecked);
+    renderLegend(svg, tempChecked)
 }
 
+
+// tool function to change the temperature presentation based on K, C, or F
+function tempConversion(metric, brightness){
+    if(metric === "C"){
+        console.log(brightness - KELVIN_TEMP)
+        return brightness - KELVIN_TEMP;
+    } else if (metric === "F"){
+        return (brightness - KELVIN_TEMP)*9/5+32;
+    } else if (metric === "K"){
+        return brightness;
+    }
+}
 
 // tool function to return date as the format of "yyyy-mm-dd"
 function dateProcessor(date){
