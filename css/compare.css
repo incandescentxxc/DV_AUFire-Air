@@ -25,6 +25,25 @@ form {
 
 }
 
+#back-button {
+  position: relative;
+  left: 400px;
+  background: #f08080;
+  border-radius: 3px;
+  border: none;
+  margin: 0;
+  width: 170px;
+  cursor: pointer;
+  height: 30px;
+  display:inline;
+  float:left;
+}
+
+#back-button a{
+  text-decoration: none;
+  color: white;
+}
+
 .svg-dashboard{
     display:inline;
     position: relative;

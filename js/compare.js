@@ -54,11 +54,11 @@ function start(){
         // some specifications for rendering time slider
         var formatDate = d3.timeFormat("%Y-%m-%d");    
 
-        var startDateCur = new Date("2019-09-01"),
-        endDateCur = new Date("2020-02-28");
+        var startDateCur = new Date("2019-10-01"),
+        endDateCur = new Date("2020-01-31");
 
-        var startDateLast = new Date("2018-09-01"),
-        endDateLast = new Date("2019-02-28");
+        var startDateLast = new Date("2018-10-01"),
+        endDateLast = new Date("2019-01-31");
         
         var currentValue = 0;
         var targetValue = height/3*2; //height = 700
@@ -220,8 +220,8 @@ function start(){
 
 
         // render the data for the first time
-        initData = fireData.filter(item => item["acq_date"] === "2019-09-01" && item["daynight"] === "D" && parseInt(item["confidence"]) > 90 );
-        initLast = fireLast.filter(item => item["acq_date"] === "2018-09-01" && item["daynight"] === "D" && parseInt(item["confidence"]) > 90 );
+        initData = fireData.filter(item => item["acq_date"] === "2019-10-01" && parseInt(item["confidence"]) > 60 );
+        initLast = fireLast.filter(item => item["acq_date"] === "2018-10-01" && parseInt(item["confidence"]) > 60 );
         render(svg, svg_last, initData, initLast, projection);
         renderLegend();
         d3.select("#myonoffswitch").on("change",d=>{
@@ -362,7 +362,7 @@ function renderLegend(){
     ])
     .interpolator(d3.interpolateOrRd);
 
-    let svg = d3.select("#dashboard").append('svg')
+    let svg = d3.select("#dashboard").insert('svg',"#back-button")
     .attr("class","svg-dashboard")
     // .attr("viewBox", [0, 0, 400, 400]);
     .style("width", 600)
@@ -409,14 +409,9 @@ function updateGraph(date, dateLast, daynightOp, dataCur, dataLast, projection, 
     var dateFilter = dateProcessor(date);
     var dateFilterLast = dateProcessor(dateLast)
     console.log(dateFilter)
-    //daynightOp: true if daytime, otherwise nighttime
-    if(daynightOp){
-        dataCur = dataCur.filter(item => item["acq_date"] === dateFilter && item["daynight"] === "D" && parseInt(item["confidence"]) > 60 );
-        dataLast = dataLast.filter(item => item["acq_date"] === dateFilterLast && item["daynight"] === "D" && parseInt(item["confidence"]) > 60 );
-    } else{
-        dataCur = dataCur.filter(item => item["acq_date"] === dateFilter && item["daynight"] === "N" && parseInt(item["confidence"]) > 60 );
-        dataLast = dataLast.filter(item => item["acq_date"] === dateFilterLast && item["daynight"] === "N" && parseInt(item["confidence"]) > 60 );
-    }
+    dataCur = dataCur.filter(item => item["acq_date"] === dateFilter && parseInt(item["confidence"]) > 60 );
+    dataLast = dataLast.filter(item => item["acq_date"] === dateFilterLast  && parseInt(item["confidence"]) > 60 );
+    
     render(svg, svg_last, dataCur,dataLast, projection);
 }
 

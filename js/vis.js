@@ -45,8 +45,8 @@ function start(){
         // some specifications for rendering time slider
         var formatDate = d3.timeFormat("%Y-%m-%d");    
 
-        var startDate = new Date("2019-09-01"),
-        endDate = new Date("2020-02-28");
+        var startDate = new Date("2019-10-01"),
+        endDate = new Date("2020-01-31");
         
         var currentValue = 0;
         var targetValue = height/3*2; //height = 700
@@ -149,7 +149,7 @@ function start(){
 
 
         // render the data for the first time
-        initData = fireData.filter(item => item["acq_date"] === "2019-09-01" && item["daynight"] === "D" && parseInt(item["confidence"]) > 60 );
+        initData = fireData.filter(item => item["acq_date"] === "2019-10-01" && item["daynight"] === "D" && parseInt(item["confidence"]) > 60 );
         render(svg, initData, projection, tempChecked);
         renderLegend(svg, tempChecked);
         d3.select("#myonoffswitch").on("change",d=>{
