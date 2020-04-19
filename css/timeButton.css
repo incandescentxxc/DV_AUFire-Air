@@ -21,7 +21,7 @@
 .onoffswitch-inner:before {
     content: "Daytime";
     padding-left: 10px;
-    background-color: #F27C5E; color: #FFFFFF;
+    background-color: #f67280; color: #FFFFFF;
 }
 .onoffswitch-inner:after {
     content: "Night time";

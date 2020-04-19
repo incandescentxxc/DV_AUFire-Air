@@ -257,6 +257,15 @@ function render(svg, data, projection, tempChecked){
             return exit.remove();
         }
     )
+
+    svg.select("#text-info").remove()
+    svg.append('text')
+    .attr("id","text-info")
+    .attr("x", 100)
+    .attr("y", 620)
+    .text("Number of Temperature Anomaly is " + data.length)
+    .style("fill", "black")
+    .style("font-size", "18px")
 ;
 
 }

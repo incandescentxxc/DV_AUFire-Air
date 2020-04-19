@@ -10,8 +10,10 @@ Basic visualization for Fire spots has been done. Focus on the interactive part 
 - <s>Style refining</s>
 - Add more informative explantion for users
 - - <s>add temperature transformation</s>
-- - disclose information on the satelite data including termperature meanings etc.
+- - <s>daily anomaly report</s>
+- - <s>disclose information on the satelite data including termperature meanings etc.</s>
 - - add more geoinfo
+- - <s>color/font for text and button</s>
 - - a new little bug about the color of the color legend under F
 - <s>add comparison view</s>
 - Zoom/pan

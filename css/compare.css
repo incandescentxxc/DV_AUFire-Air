@@ -89,6 +89,12 @@ form {
     text-decoration: none;
     color: white;
   }
+
+  #data-info{
+    position: relative;
+    top: 50px;
+    width: 100%;
+  }
   .ticks {
     font-size: 12px;
   }
