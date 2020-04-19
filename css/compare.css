@@ -2,7 +2,7 @@
     display: inline-block;
 }
 .dashboard{
-    display: inline-block;
+    display: inline-flexbox;
     vertical-align:top;
 }
 
@@ -25,11 +25,17 @@ form {
 
 }
 
-#play-button {
+.svg-dashboard{
+    display:inline;
     position: relative;
-    top: 180px;
-    left: 10px;
+    left: 380px;
+    float:left;
+}
+
+#play-button {
     background: #f08080;
+    position: relative;
+    left: 80px;
     padding-right: 26px;
     border-radius: 3px;
     border: none;
@@ -39,6 +45,8 @@ form {
     width: 60px;
     cursor: pointer;
     height: 30px;
+    display:inline;
+    float:left;
   }
 
   #play-button:hover {

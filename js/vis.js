@@ -1,14 +1,14 @@
 // some consts used for temperature presentation
 const KELVIN_TEMP = 273.15;
 const K_DOMAIN_MIN = 300;
-const K_DOMAIN_MAX = 510;
+const K_DOMAIN_MAX = 550;
 const C_DOMAIN_MIN = Math.round(K_DOMAIN_MIN - KELVIN_TEMP);
 const C_DOMAIN_MAX = Math.round(K_DOMAIN_MAX - KELVIN_TEMP);
 const F_DOMAIN_MIN = Math.round(C_DOMAIN_MIN * 9 / 5 + 32);
 const F_DOMAIN_MAX = Math.round(C_DOMAIN_MAX * 9 / 5 + 32);
 
 function start(){
-    var dataFirePromise = d3.csv("http://localhost:8080/csv/fire_nrt_M6.csv");
+    var dataFirePromise = d3.json("http://localhost:8080/json/fire_thisyear.json");
     var mapPromise = d3.json("http://localhost:8080/aus_state.geojson");
     Promise.all([mapPromise, dataFirePromise]).then(values=> {
         mapData = values[0];
@@ -16,8 +16,8 @@ function start(){
 
         //create SVG
         var margin = {top:50, right:50, bottom:50, left:50},
-        width = 1200 - margin.left - margin.right,
-        height = 800 - margin.top - margin.bottom;
+        width = (1200 - margin.left - margin.right),
+        height = (800 - margin.top - margin.bottom);
         let svg = d3.select("#map").append('svg')
             // .attr("viewBox", [0, 0, 400, 400]);
             .style("width", width + margin.left + margin.right)
@@ -45,8 +45,8 @@ function start(){
         // some specifications for rendering time slider
         var formatDate = d3.timeFormat("%Y-%m-%d");    
 
-        var startDate = new Date("2019-10-01"),
-        endDate = new Date("2020-01-11");
+        var startDate = new Date("2019-09-01"),
+        endDate = new Date("2020-02-28");
         
         var currentValue = 0;
         var targetValue = height/3*2; //height = 700
@@ -116,6 +116,8 @@ function start(){
                 clearInterval(timer);
                 // timer = 0;
                 button.text("Play");
+                updateSlider(y.invert(currentValue));
+                updateGraph(y.invert(currentValue),switchChecked,fireData,projection,svg, tempChecked);     
             } else {
                 moving = true;
                 timer = setInterval(step, 100);
@@ -126,7 +128,7 @@ function start(){
         function step() {
             updateSlider(y.invert(currentValue));
             updateGraph(y.invert(currentValue),switchChecked,fireData,projection,svg, tempChecked); 
-            currentValue = currentValue + (targetValue/153); // 153 is the specific days recorded
+            currentValue = currentValue + (targetValue/180); // 153 is the specific days recorded
             if (currentValue > targetValue) {
               moving = false;
               currentValue = 0;
@@ -134,11 +136,12 @@ function start(){
               // timer = 0;
               playButton.text("Play");
               console.log("Slider moving: " + moving);
+              updateSlider(y.invert(currentValue));
+              updateGraph(y.invert(currentValue),switchChecked,fireData,projection,svg, tempChecked); 
             }
         }
         function updateSlider(date) {
             handle.attr("cy", y(date));
-            console.log(handle)
             label
               .attr("y", y(date))
               .text(formatDate(date));
@@ -146,7 +149,7 @@ function start(){
 
 
         // render the data for the first time
-        initData = fireData.filter(item => item["acq_date"] === "2019-10-01" && item["daynight"] === "D" && parseInt(item["confidence"]) > 60 );
+        initData = fireData.filter(item => item["acq_date"] === "2019-09-01" && item["daynight"] === "D" && parseInt(item["confidence"]) > 60 );
         render(svg, initData, projection, tempChecked);
         renderLegend(svg, tempChecked);
         d3.select("#myonoffswitch").on("change",d=>{
@@ -185,7 +188,6 @@ function render(svg, data, projection, tempChecked){
         color_domain_min = F_DOMAIN_MIN;
         color_domain_max = F_DOMAIN_MAX;
     }
-    console.log(data)
 
     // create a tooltip
     // Three function that change the tooltip when user hover / move / leave a cell
