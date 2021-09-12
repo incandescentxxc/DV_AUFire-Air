@@ -1,6 +1,12 @@
 #map {
     display: inline-block;
 }
+.container{
+  height: 1000px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 .dashboard{
     display: inline-block;
     vertical-align:top;
