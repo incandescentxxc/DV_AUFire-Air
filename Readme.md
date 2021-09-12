@@ -1,7 +1,7 @@
 # Introduction
 This is a data visualization project whose aim is to visualize the situaion of hill fire happened in Austrilia from late 2019 to January 2020. We use the satelite data to show the severity of the hill fire and its daily change. Besides, we also collect the air quality data in AU during that period. We plan to combine them together, to disclose the negative effect the hill fire poses to human beings in order to draw public's attention on our <strong>climate change problem</strong>
 
-![Alt text](/readme_resources/Australia WireFire Visualization.png?raw=true "Title")
+![alt text](https://github.com/incandescentxxc/DV_AUFire-Air/blob/master/readme_resources/Australia%20WireFire%20Visualization.png)
 
 One Paragraph of the project description
 
